@@ -1,3 +1,4 @@
+import copy
 from datetime import date, datetime
 from pathlib import Path
 import sys
@@ -7,7 +8,7 @@ import bpy
 
 bl_info = {
     "name": "AI Upscaler for Blender",
-    "blender": (2, 83, 0)
+    "blender": (2, 93, 0)
 }
 
 ai_upscaler_properties = {
@@ -30,12 +31,22 @@ class AiUpscalerPanel(bpy.types.Panel):
 
         # Upscaler selection
         layout.label(text="Upscaler: Real-ESRGAN")
+
+        # Output path
+        layout.label(text="Output Path:")
+        layout.label(text="    Must be a folder.")
+        layout.label(text="    Folder must already exist.")
+        layout.label(text="    If error, see above.")
+        layout.prop(context.scene.render, "filepath")
         
         # Upscaled Resolution
         layout.prop(context.scene, "ai_upscaler_upscaled_resolution_x")
         layout.prop(context.scene, "ai_upscaler_upscaled_resolution_y")
                 
-        # Custom Property Example
+        # Scale Factor
+        layout.label(text="Scale Factor:")
+        layout.label(text="    2: Slower, Higher Quality")
+        layout.label(text="    4: Faster, Lower Quality")
         layout.prop(context.scene, "ai_upscaler_scale_factor")
         ai_upscaler_properties['scale_factor'] = context.scene.ai_upscaler_scale_factor
         
@@ -77,7 +88,7 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
         original_y = context.scene.render.resolution_y
         original_scale = context.scene.render.resolution_percentage
         original_render_path = context.scene.render.filepath
-        original_sys_path = sys.path
+        original_sys_path = copy.deepcopy(sys.path)
         
         try:
             # Set render resolution
@@ -91,7 +102,7 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
                 raise Exception("Set 'Output Properties -> Output -> Output Path' to an existing folder.")
             if not new_path.is_dir():
                 raise Exception("Set 'Output Properties -> Output -> Output Path' to an existing folder.")
-            new_path = new_path / f"blender_output_{datetime.now().isoformat()}Z"
+            new_path = new_path / f"blender_output_{datetime.now().isoformat().replace(':', '-')}Z"
             small_image_path = str(new_path / "small_image.png")
             upscaled_image_path = str(new_path / "upscaled_image.png")
             
@@ -129,7 +140,7 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
             context.scene.render.resolution_y = original_y
             context.scene.render.resolution_percentage = original_scale
             context.scene.render.filepath = original_render_path
-            sys.path = original_sys_path
+            sys.path = copy.deepcopy(original_sys_path)
         
         return {'FINISHED'}
 
@@ -146,10 +157,10 @@ def register():
         default=1080,
         min=1
     )
-    bpy.types.Scene.ai_upscaler_scale_factor = bpy.props.FloatProperty(
+    bpy.types.Scene.ai_upscaler_scale_factor = bpy.props.IntProperty(
         name="Scale Factor",
-        default=4.0,
-        min=1.0
+        default=4,
+        min=2
     )
     bpy.types.Scene.small_image_file_location = bpy.props.StringProperty(
         name="File",

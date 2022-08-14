@@ -1,7 +1,7 @@
 AI Upscaler for Blender
 =======================
 
-AI Upscaler for Blender using [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN).
+Dramatically reduce render times using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) upscaler.
 
 Quickstart
 ----------
@@ -9,14 +9,87 @@ Quickstart
 Build Instructions
 ------------------
 
+### Windows
+
+* Download and install mamba from mambaforge
+  * https://github.com/conda-forge/miniforge#mambaforge
+* Download AI Upscaler for Blender
+ * `> git clone https://github.com/jarrellmark/ai_upscaler_for_blender.git`
+ * `> cd ai_upscaler_for_blender`
+ * `> git checkout tags/v1.0.0 -b v1.0.0`
+* Download Real-ESRGAN v0.2.5.0 (April 24, 2022)
+  * Reference
+    * https://github.com/xinntao/Real-ESRGAN
+  * `> git clone https://github.com/xinntao/Real-ESRGAN.git`
+  * `> cd Real-ESRGAN`
+  * `> git checkout tags/v0.2.5.0 -b v0.2.5.0`
+* Remove the conda environment if it already exists
+  * `> mamba remove --name ai_upscaler_for_blender --all`
+* Create initial conda environment
+  * `> mamba create --name ai_upscaler_for_blender python=3.9 nomkl`
+  * `> mamba activate ai_upscaler_for_blender`
+* Install PyTorch 1.12.1
+  * Reference
+    * https://pytorch.org/get-started/locally
+    * Select Stable (1.12.1) / Windows / Pip / Python / CPU
+  * `> pip3 install --target site-packages torch torchvision torchaudio`
+  * `> pip3 install torch torchvision torchaudio`
+* Install dependent packages
+  * First comment out the following in requirements.txt
+    * facexlib>=0.2.0.3
+    * gfpgan>=0.2.1
+  * ```
+    # Install basicsr - https://github.com/xinntao/BasicSR
+    # We use BasicSR for both training and inference
+    pip install --target site-packages basicsr
+    # facexlib and gfpgan are for face enhancement
+    ## pip install --target site-packages facexlib
+    ## pip install --target site-packages gfpgan
+    pip install --target site-packages -r requirements.txt
+    ## python setup.py develop
+    pip install --target site-packages .
+    ```
+* Download pre-trained models
+  * `> wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth -OutFile experiments\pretrained_models\RealESRGAN_x4plus.pth`
+* Optional: Run example inference
+  * Add to top of inference_realesrgan.py
+    * ```
+      import site
+      site.addsitedir('site-packages')
+      ```
+  * `> python inference_realesrgan.py -n RealESRGAN_x4plus -i inputs --fp32 # --face_enhance`
+    * [Note](https://github.com/xinntao/Real-ESRGAN/issues/306): add --fp32 for cpu
+* Build Blender addon
+  * `> cd ../..`
+  * Copy ai_upscaler_for_blender to aufb to prevent too long file paths
+    * `> Remove-Item aufb -Recurse`
+    * `> cp -r ai_upscaler_for_blender aufb`
+  * `> Compress-Archive -Path aufb ai_upscaler_for_blender-windows-blender293.zip`
+    * Or use 7-Zip to create the .zip, it's faster.
+* Optional: Examine licenses
+  * Reference
+    * https://github.com/raimon49/pip-licenses
+  * First install all the pip packages into the conda environment. Run above pip commands without `--target site-packages`.
+  * `> pip install pip-licenses`
+  * `> pip-licenses --format=markdown`
+  * `> pip-licenses --format=csv > licenses.csv`
+
 ### Linux
 
+* Download and install mamba from mambaforge
+  * https://github.com/conda-forge/miniforge#mambaforge
+* Download AI Upscaler for Blender
+ * `$ git clone https://github.com/jarrellmark/ai_upscaler_for_blender.git`
+ * `$ cd ai_upscaler_for_blender`
+ * `$ git checkout tags/v1.0.0 -b v1.0.0`
 * Download Real-ESRGAN v0.2.5.0 (April 24, 2022)
   * Reference
     * https://github.com/xinntao/Real-ESRGAN
   * `$ git clone https://github.com/xinntao/Real-ESRGAN.git`
   * `$ cd Real-ESRGAN`
   * `$ git checkout tags/v0.2.5.0 -b v0.2.5.0`
+* Remove the conda environment if it already exists
+  * `$ mamba remove --name ai_upscaler_for_blender --all`
 * Create initial conda environment
   * `$ mamba create --name ai_upscaler_for_blender python=3.9 nomkl`
   * `$ mamba activate ai_upscaler_for_blender`
@@ -25,6 +98,7 @@ Build Instructions
     * https://pytorch.org/get-started/locally/#linux-installation
     * Select Stable (1.12.1) / Linux / Pip / Python / CPU
   * `$ pip3 install --target site-packages torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu`
+  * `$ pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu`
 * Install dependent packages
   * First comment out the following in requirements.txt
     * facexlib>=0.2.0.3
@@ -42,7 +116,7 @@ Build Instructions
     ```
 * Download pre-trained models
   * `$ wget https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth -P experiments/pretrained_models`
-* Run example inference
+* Optional: Run example inference
   * Add to top of inference_realesrgan.py
     * ```
       import site
@@ -50,9 +124,13 @@ Build Instructions
       ```
   * `$ python inference_realesrgan.py -n RealESRGAN_x4plus -i inputs --fp32 # --face_enhance`
     * [Note](https://github.com/xinntao/Real-ESRGAN/issues/306): add --fp32 for cpu
-* Examine licenses
+* Build Blender addon
+  * `$ cd ../..`
+  * `$ zip -r ai_upscaler_for_blender-linux-blender293.zip ai_upscaler_for_blender`
+* Optional: Examine licenses
   * Reference
     * https://github.com/raimon49/pip-licenses
+  * First install all the pip packages into the conda environment. Run above pip commands without `--target site-packages`.
   * `$ pip install pip-licenses`
   * `$ pip-licenses --format=markdown`
   * `$ pip-licenses --format=csv > licenses.csv`
