@@ -26,7 +26,11 @@ Build Instructions
 * Remove the conda environment if it already exists
   * `> mamba remove --name ai_upscaler_for_blender --all`
 * Create initial conda environment
-  * `> mamba create --name ai_upscaler_for_blender python=3.9 nomkl`
+  * `> mamba create --name ai_upscaler_for_blender python=3.9`
+  * For Blender 2.93 LTS
+    * `> mamba create --name ai_upscaler_for_blender python=3.9`
+  * For Blender 3.1+
+    * `> mamba create --name ai_upscaler_for_blender python=3.10 nomkl`
   * `> mamba activate ai_upscaler_for_blender`
 * Install PyTorch 1.12.1
   * Reference
@@ -36,8 +40,16 @@ Build Instructions
   * `> pip3 install torch torchvision torchaudio`
 * Install dependent packages
   * First comment out the following in requirements.txt
-    * facexlib>=0.2.0.3
-    * gfpgan>=0.2.1
+    * Original lines
+      * ```
+        facexlib>=0.2.0.3
+        gfpgan>=0.2.1
+        ```
+    * After modifying requirements.txt
+      * ```
+        # facexlib>=0.2.0.3
+        # gfpgan>=0.2.1
+        ```
   * ```
     # Install basicsr - https://github.com/xinntao/BasicSR
     # We use BasicSR for both training and inference
@@ -64,8 +76,11 @@ Build Instructions
   * Copy ai_upscaler_for_blender to aufb to prevent too long file paths
     * `> Remove-Item aufb -Recurse`
     * `> cp -r ai_upscaler_for_blender aufb`
-  * `> Compress-Archive -Path aufb ai_upscaler_for_blender-windows-blender293.zip`
-    * Or use 7-Zip to create the .zip, it's faster.
+  * For Blender 2.93 LTS
+    * `> Compress-Archive -Path aufb ai_upscaler_for_blender-windows-blender293.zip`
+  * For Blender 3.1+
+    * `> Compress-Archive -Path aufb ai_upscaler_for_blender-windows-blender231.zip`
+  * Or use 7-Zip to create the .zip, it's faster.
 * Optional: Examine licenses
   * Reference
     * https://github.com/raimon49/pip-licenses
@@ -91,7 +106,10 @@ Build Instructions
 * Remove the conda environment if it already exists
   * `$ mamba remove --name ai_upscaler_for_blender --all`
 * Create initial conda environment
-  * `$ mamba create --name ai_upscaler_for_blender python=3.9 nomkl`
+  * For Blender 2.93 LTS
+    * `$ mamba create --name ai_upscaler_for_blender python=3.9 nomkl`
+  * For Blender 3.1+
+    * `$ mamba create --name ai_upscaler_for_blender python=3.10 nomkl`
   * `$ mamba activate ai_upscaler_for_blender`
 * Install PyTorch 1.12.1
   * Reference
@@ -101,8 +119,16 @@ Build Instructions
   * `$ pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu`
 * Install dependent packages
   * First comment out the following in requirements.txt
-    * facexlib>=0.2.0.3
-    * gfpgan>=0.2.1
+    * Original lines
+      * ```
+        facexlib>=0.2.0.3
+        gfpgan>=0.2.1
+        ```
+    * After modifying requirements.txt
+      * ```
+        # facexlib>=0.2.0.3
+        # gfpgan>=0.2.1
+        ```
   * ```
     # Install basicsr - https://github.com/xinntao/BasicSR
     # We use BasicSR for both training and inference
@@ -126,7 +152,10 @@ Build Instructions
     * [Note](https://github.com/xinntao/Real-ESRGAN/issues/306): add --fp32 for cpu
 * Build Blender addon
   * `$ cd ../..`
-  * `$ zip -r ai_upscaler_for_blender-linux-blender293.zip ai_upscaler_for_blender`
+  * For Blender 2.93 LTS
+    * `$ zip -r ai_upscaler_for_blender-linux-blender293.zip ai_upscaler_for_blender`
+  * For Blender 3.1+
+    * `$ zip -r ai_upscaler_for_blender-linux-blender31.zip ai_upscaler_for_blender`
 * Optional: Examine licenses
   * Reference
     * https://github.com/raimon49/pip-licenses

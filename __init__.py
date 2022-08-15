@@ -7,17 +7,22 @@ import traceback
 import bpy
 
 bl_info = {
-    "name": "AI Upscaler for Blender",
+    "name": "AI Upscaler for Blender (Test)",
     "blender": (2, 93, 0)
 }
 
 ai_upscaler_properties = {
     'render_resolution_x': 480,
     'render_resolution_x': 270,
-    'scale_factor': 4.0,
-    'small_image_path': '',
-    'upscaled_image_path': ''
+    'scale_factor': 4.0
 }
+
+def show_message_box(message="", title="AI Upscaler", icon='ERROR'):
+    # Source: https://blender.stackexchange.com/questions/109711/how-to-popup-simple-message-box-from-python-console
+    def draw(self, context):
+        self.layout.label(text=message)
+
+    bpy.context.window_manager.popup_menu(draw, title=title, icon=icon)
 
 class AiUpscalerPanel(bpy.types.Panel):
     bl_label = "AI Upscaler"
@@ -36,7 +41,6 @@ class AiUpscalerPanel(bpy.types.Panel):
         layout.label(text="Output Path:")
         layout.label(text="    Must be a folder.")
         layout.label(text="    Folder must already exist.")
-        layout.label(text="    If error, see above.")
         layout.prop(context.scene.render, "filepath")
         
         # Upscaled Resolution
@@ -80,8 +84,12 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
     def execute(self, context):
         # context.scene.ai_upscaler_scale_factor = 5
         
-        # Save file before doing anything stupid
-        bpy.ops.wm.save_mainfile()
+        # Save file to prevent losing data
+        try:
+            bpy.ops.wm.save_mainfile()
+        except Exception as exception:
+            show_message_box("Do 'File -> Save' and try again.")
+            return {'FINISHED'}
         
         # Save variables to restore them later
         original_x = context.scene.render.resolution_x
@@ -99,9 +107,11 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
             # Calculate paths
             new_path = Path(context.scene.render.filepath)
             if not new_path.exists():
-                raise Exception("Set 'Output Properties -> Output -> Output Path' to an existing folder.")
+                show_message_box("Set 'Output Path' to an existing folder.")
+                return {'FINISHED'}
             if not new_path.is_dir():
-                raise Exception("Set 'Output Properties -> Output -> Output Path' to an existing folder.")
+                show_message_box("Set 'Output Path' to an existing folder.")
+                return {'FINISHED'}
             new_path = new_path / f"blender_output_{datetime.now().isoformat().replace(':', '-')}Z"
             small_image_path = str(new_path / "small_image.png")
             upscaled_image_path = str(new_path / "upscaled_image.png")
@@ -113,20 +123,15 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
             bpy.ops.render.render(write_still=True)
 
             # Upscale
-            print("starting upscale")
             sys.path.append(str(Path(__file__).parent))
             sys.path.append(str(Path(__file__).parent / 'Real-ESRGAN' / 'site-packages'))
-            print(f"sys.path: {sys.path}")
             import inference_realesrgan_blender
-            print("imported inference_realesrgan_blender")
             upscaler = inference_realesrgan_blender.RealESRGANerBlender()
-            print("created upscaler")
             upscaler.upscale(
                 input_path=small_image_path,
                 save_path=upscaled_image_path,
                 scale_factor=ai_upscaler_properties['scale_factor']
             )
-            print("upscaled")
 
             # Display paths
             context.scene.small_image_file_location = small_image_path
@@ -134,6 +139,7 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
         except Exception as exception:
             print(f"Exception:")
             print(traceback.format_exc())
+            show_message_box(traceback.format_exc())
         finally:
             # Restore original variables
             context.scene.render.resolution_x = original_x
@@ -141,7 +147,6 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
             context.scene.render.resolution_percentage = original_scale
             context.scene.render.filepath = original_render_path
             sys.path = copy.deepcopy(original_sys_path)
-        
         return {'FINISHED'}
 
 
