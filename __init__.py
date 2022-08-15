@@ -7,7 +7,7 @@ import traceback
 import bpy
 
 bl_info = {
-    "name": "AI Upscaler for Blender (Test)",
+    "name": "AI Upscaler for Blender",
     "blender": (2, 93, 0)
 }
 
