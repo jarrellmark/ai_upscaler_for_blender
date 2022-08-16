@@ -26,11 +26,10 @@ Build Instructions
 * Remove the conda environment if it already exists
   * `> mamba remove --name ai_upscaler_for_blender --all`
 * Create initial conda environment
-  * `> mamba create --name ai_upscaler_for_blender python=3.9`
   * For Blender 2.93 LTS
     * `> mamba create --name ai_upscaler_for_blender python=3.9`
   * For Blender 3.1+
-    * `> mamba create --name ai_upscaler_for_blender python=3.10 nomkl`
+    * `> mamba create --name ai_upscaler_for_blender python=3.10`
   * `> mamba activate ai_upscaler_for_blender`
 * Install PyTorch 1.12.1
   * Reference

@@ -97,8 +97,17 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
         original_scale = context.scene.render.resolution_percentage
         original_render_path = context.scene.render.filepath
         original_sys_path = copy.deepcopy(sys.path)
+        # Delete numpy from modules because sys.modules is loaded before sys.path
+        # and Blender has numpy in sys.modules.
+        original_numpy_modules = {}
+        for key, value in list(sys.modules.items()):
+            if key.startswith('numpy'):
+                original_numpy_modules[key] = value
+                del sys.modules[key]
         
         try:
+            known_exception = False
+
             # Set render resolution
             context.scene.render.resolution_x = ai_upscaler_properties['render_resolution_x']
             context.scene.render.resolution_y = ai_upscaler_properties['render_resolution_y']
@@ -108,10 +117,12 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
             new_path = Path(context.scene.render.filepath)
             if not new_path.exists():
                 show_message_box("Set 'Output Path' to an existing folder.")
-                return {'FINISHED'}
+                known_exception = True
+                raise Exception("Set 'Output Path' to an existing folder.")
             if not new_path.is_dir():
                 show_message_box("Set 'Output Path' to an existing folder.")
-                return {'FINISHED'}
+                known_exception = True
+                raise Exception("Set 'Output Path' to an existing folder.")
             new_path = new_path / f"blender_output_{datetime.now().isoformat().replace(':', '-')}Z"
             small_image_path = str(new_path / "small_image.png")
             upscaled_image_path = str(new_path / "upscaled_image.png")
@@ -123,8 +134,8 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
             bpy.ops.render.render(write_still=True)
 
             # Upscale
-            sys.path.append(str(Path(__file__).parent))
-            sys.path.append(str(Path(__file__).parent / 'Real-ESRGAN' / 'site-packages'))
+            sys.path = [str(Path(__file__).parent / 'Real-ESRGAN' / 'site-packages')] + sys.path
+            sys.path = [str(Path(__file__).parent)] + sys.path
             import inference_realesrgan_blender
             upscaler = inference_realesrgan_blender.RealESRGANerBlender()
             upscaler.upscale(
@@ -139,7 +150,8 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
         except Exception as exception:
             print(f"Exception:")
             print(traceback.format_exc())
-            show_message_box(traceback.format_exc())
+            if not known_exception:
+                show_message_box(traceback.format_exc())
         finally:
             # Restore original variables
             context.scene.render.resolution_x = original_x
@@ -147,6 +159,11 @@ class AiUpscalerRenderOperator(bpy.types.Operator):
             context.scene.render.resolution_percentage = original_scale
             context.scene.render.filepath = original_render_path
             sys.path = copy.deepcopy(original_sys_path)
+            for key, value in list(sys.modules.items()):
+                if key.startswith('numpy'):
+                    del sys.modules[key]
+            for key, value in original_numpy_modules.items():
+                sys.modules[key] = value
         return {'FINISHED'}
 
 
