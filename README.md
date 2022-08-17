@@ -6,7 +6,7 @@ Dramatically reduce render times using the [Real-ESRGAN](https://github.com/xinn
 Install
 -------
 
-⬇️ Open Blender.
+⬇️ Download Add-on.
 
 **Blender 3.1 or newer**
 
