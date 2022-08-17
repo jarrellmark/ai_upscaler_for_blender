@@ -54,7 +54,7 @@ Use
 
 ![Output Path](/assets/Output_Path.png)
 
-⬇️ Set the upscaled resolution and scale factor. Upscaled resolution is the final resolution after upscaling. For example, with Upscaled Resolution of 1920x1080 and scale factor of 4, Blender will render at 480x270 (1920/4 by 1080/4). Real-ESRGAN will upscale the 480x270 image by a factor of 4 to 1920x1080 (480*4 by 270*4).
+⬇️ Set the upscaled resolution and scale factor. Upscaled resolution is the final resolution after upscaling. For example, with Upscaled Resolution of 1920x1080 and scale factor of 4, Blender will render at 480x270 (1920/4 by 1080/4). Real-ESRGAN will upscale the 480x270 image by a factor of 4 to 1920x1080 (480\*4 by 270\*4).
 
 ![Resolution Scale Factor](/assets/Resolution_And_Scale_Factor.png)
 
