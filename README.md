@@ -6,6 +6,29 @@ Dramatically reduce render times using the [Real-ESRGAN](https://github.com/xinn
 Quickstart
 ----------
 
+### Download Add-on
+
+**Blender 3.1 or newer**
+
+* [Windows](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-windows-blender31.zip)
+* [macOS - Intel](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-macos-x64-blender31.zip)
+* [macOS - Apple Silicon](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-macos-arm64-blender31.zip)
+* [Linux](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-linux-blender31.zip)
+
+⬆️ Open Blender.
+
+⬆️ Click 'Edit' -> 'Preferences...'.
+
+⬆️ Click 'Add-ons' on the left.
+
+⬆️ Click 'Install...' on the upper right.
+
+⬆️ Navigate to the ai_upscaler_for_blender zip file and click 'Install Add-on'.
+
+⬆️ Wait a few minutes until Blender starts responding again. There's a lot of files to unzip.
+
+⬆️ Go to 'Output Properties' by clicking the printer icon on the left.
+
 Build Instructions
 ------------------
 
