@@ -3,8 +3,8 @@ AI Upscaler for Blender
 
 Dramatically reduce render times using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) upscaler.
 
-Quickstart
-----------
+Install
+-------
 
 ### Download Add-on
 
@@ -15,19 +15,50 @@ Quickstart
 * [macOS - Apple Silicon](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-macos-arm64-blender31.zip)
 * [Linux](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-linux-blender31.zip)
 
-⬆️ Open Blender.
+⬇️ Open Blender.
 
-⬆️ Click 'Edit' -> 'Preferences...'.
+![Open Blender](/assets/Open_Blender.png)
 
-⬆️ Click 'Add-ons' on the left.
+⬇️ Click 'Edit' -> 'Preferences...'.
 
-⬆️ Click 'Install...' on the upper right.
+![Edit Preferences](/assets/Edit_Preferences.png)
 
-⬆️ Navigate to the ai_upscaler_for_blender zip file and click 'Install Add-on'.
+⬇️ Click 'Add-ons' on the left.
 
-⬆️ Wait a few minutes until Blender starts responding again. There's a lot of files to unzip.
+![Addons](/assets/Addons.png)
 
-⬆️ Go to 'Output Properties' by clicking the printer icon on the left.
+⬇️ Click 'Install...' on the upper right.
+
+![Install](/assets/Install.png)
+
+⬇️ Navigate to the ai_upscaler_for_blender zip file and click 'Install Add-on'.
+
+![Install Addon](/assets/Install_Addon.png)
+
+⬇️ Wait a few minutes until Blender starts responding again. There's a lot of files to unzip.
+
+![Wait](/assets/Not_Responding.png)
+
+Use
+---
+
+⬇️ Click 'File' -> 'Save'.
+
+![File Save](/assets/File_Save.png)
+
+⬇️ Go to 'Output Properties' by clicking the printer icon on the left. Scroll down to AI Upscaler, Upscaler: Real-ESRGAN.
+
+![Output Properties](/assets/Output_Properties.png)
+
+⬇️ Set the Output Path to an existing folder, such as your 'Downloads' folder.
+
+![Output Path](/assets/Output_Path.png)
+
+⬇️ Set the upscaled resolution and scale factor. Upscaled resolution is the final resolution after upscaling. For example, with Upscaled Resolution of 1920x1080 and scale factor of 4, Blender will render at 480x270 (1920/4 by 1080/4). Real-ESRGAN will upscale the 480x270 image by a factor of 4 to 1920x1080 (480*4 by 270*4).
+
+![Resolution Scale Factor](/assets/Resolution_And_Scale_Factor.png)
+
+Blender will be unresponsive until the full process is finished. It will take a while but should be much faster than rendering at full resolution.
 
 Build Instructions
 ------------------
