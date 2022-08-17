@@ -60,8 +60,8 @@ Use
 
 Blender will be unresponsive until the full process is finished. It will take a while but should be much faster than rendering at full resolution.
 
-Build Instructions
-------------------
+Build Instructions (For Developers)
+-----------------------------------
 
 ### Windows
 
