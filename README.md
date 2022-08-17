@@ -88,6 +88,87 @@ Build Instructions
   * `> pip-licenses --format=markdown`
   * `> pip-licenses --format=csv > licenses.csv`
 
+### macOS
+
+* Download and install mamba from mambaforge
+  * https://github.com/conda-forge/miniforge#mambaforge
+* Download AI Upscaler for Blender
+ * `% git clone https://github.com/jarrellmark/ai_upscaler_for_blender.git`
+ * `% cd ai_upscaler_for_blender`
+ * `% git checkout tags/v1.0.0 -b v1.0.0`
+* Download Real-ESRGAN v0.2.5.0 (April 24, 2022)
+  * Reference
+    * https://github.com/xinntao/Real-ESRGAN
+  * `% git clone https://github.com/xinntao/Real-ESRGAN.git`
+  * `% cd Real-ESRGAN`
+  * `% git checkout tags/v0.2.5.0 -b v0.2.5.0`
+* Remove the conda environment if it already exists
+  * `% mamba remove --name ai_upscaler_for_blender --all`
+* Create initial conda environment
+  * For Blender 2.93 LTS
+    * `% mamba create --name ai_upscaler_for_blender python=3.9 nomkl`
+  * For Blender 3.1+
+    * `% mamba create --name ai_upscaler_for_blender python=3.10 nomkl`
+  * `% mamba activate ai_upscaler_for_blender`
+* Install PyTorch 1.12.1
+  * Reference
+    * https://pytorch.org/get-started/locally
+    * Select Stable (1.12.1) / Mac / Pip / Python / Default
+  * `% pip3 install --target site-packages torch torchvision torchaudio`
+  * `% pip3 install torch torchvision torchaudio`
+* Install dependent packages
+  * First comment out the following in requirements.txt
+    * Original lines
+      * ```
+        facexlib>=0.2.0.3
+        gfpgan>=0.2.1
+        ```
+    * After modifying requirements.txt
+      * ```
+        # facexlib>=0.2.0.3
+        # gfpgan>=0.2.1
+        ```
+  * ```
+    # Install basicsr - https://github.com/xinntao/BasicSR
+    # We use BasicSR for both training and inference
+    pip install --target site-packages basicsr
+    # facexlib and gfpgan are for face enhancement
+    ## pip install --target site-packages facexlib
+    ## pip install --target site-packages gfpgan
+    pip install --target site-packages -r requirements.txt
+    ## python setup.py develop
+    pip install --target site-packages .
+    ```
+* Download pre-trained models
+  * `% curl -L -o experiments/pretrained_models/RealESRGAN_x4plus.pth https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth`
+* Optional: Run example inference
+  * Add to top of inference_realesrgan.py
+    * ```
+      import site
+      site.addsitedir('site-packages')
+      ```
+  * `% python inference_realesrgan.py -n RealESRGAN_x4plus -i inputs --fp32 # --face_enhance`
+    * [Note](https://github.com/xinntao/Real-ESRGAN/issues/306): add --fp32 for cpu
+* Build Blender addon
+  * `% cd ../..`
+  * For Blender 2.93 LTS
+    * For macOS - Apple Silicon
+      * `% zip -r ai_upscaler_for_blender-macos-arm64-blender293.zip ai_upscaler_for_blender`
+    * For macOS - Intel
+      * `% zip -r ai_upscaler_for_blender-macos-x64-blender293.zip ai_upscaler_for_blender`
+  * For Blender 3.1+
+    * For macOS - Apple Silicon
+      * `% zip -r ai_upscaler_for_blender-macos-arm64-blender231.zip ai_upscaler_for_blender`
+    * For macOS - Intel
+      * `% zip -r ai_upscaler_for_blender-macos-x64-blender231.zip ai_upscaler_for_blender`
+* Optional: Examine licenses
+  * Reference
+    * https://github.com/raimon49/pip-licenses
+  * First install all the pip packages into the conda environment. Run above pip commands without `--target site-packages`.
+  * `% pip install pip-licenses`
+  * `% pip-licenses --format=markdown`
+  * `% pip-licenses --format=csv > licenses.csv`
+
 ### Linux
 
 * Download and install mamba from mambaforge
@@ -112,7 +193,7 @@ Build Instructions
   * `$ mamba activate ai_upscaler_for_blender`
 * Install PyTorch 1.12.1
   * Reference
-    * https://pytorch.org/get-started/locally/#linux-installation
+    * https://pytorch.org/get-started/locally
     * Select Stable (1.12.1) / Linux / Pip / Python / CPU
   * `$ pip3 install --target site-packages torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu`
   * `$ pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu`
@@ -197,7 +278,7 @@ License
 | Pillow                  | 9.2.0           | Historical Permission Notice and Disclaimer (HPND) |
 | PyWavelets              | 1.3.0           | MIT License                                        |
 | PyYAML                  | 6.0             | MIT License                                        |
-| Real-ESRGAN             | v0.2.5.0        | 3-Clause BSD License                               |
+| Real-ESRGAN             | v0.2.5.0        | BSD-3-Clause                               |
 | Werkzeug                | 2.2.2           | BSD License                                        |
 | absl-py                 | 1.2.0           | Apache Software License                            |
 | addict                  | 2.4.0           | MIT License                                        |
