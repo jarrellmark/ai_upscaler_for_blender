@@ -3,13 +3,30 @@ AI Upscaler for Blender
 
 Blender add-on to dramatically reduce render times using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) upscaler.
 
-**Rendered in 5 mins with upscaling ⬇️**
+**Rendering an HD image in Blender takes 37 minutes ⬇️**
+
+![Teaser Full Render](/assets/teaser_full_render.jpg)
+
+**Upscaling can render a similar quality image in 5 mins total ⬇️**
 
 ![Teaser Upscaled](/assets/teaser_upscaled.jpg)
 
-**Rendered in 37 mins without upscaling ⬇️**
+**Why**
 
-![Teaser Full Render](/assets/teaser_full_render.jpg)
+* 🥔 Potato PCs can now do 3d rendering.
+* 🖼️ 4k images can be rendered in the time it would take to render HD 1080p images.
+* 🖼️ HD 1080p images can be rendered in record time on low end hardware.
+
+* Installation is easy. Just install the addon.
+* No special HW or GPU required. Upscaling is done entirely on the CPU.
+
+**How**
+
+With the click of a button:
+
+* Blender renders a low resolution image.
+* The Real-ESRGAN Upscaler upscales the low resolution image to a higher resolution image.
+* Real-ESRGAN is a deep learning upscaler that uses neural networks to achieve excellent results by adding in detail when it upscales.
 
 Install
 -------
