@@ -1,7 +1,7 @@
 AI Upscaler for Blender
 =======================
 
-Dramatically reduce render times using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) upscaler.
+Blender add-on to dramatically reduce render times using the [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) upscaler.
 
 **Rendered in 5 mins with upscaling**
 
