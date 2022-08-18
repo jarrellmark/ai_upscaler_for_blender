@@ -13,12 +13,11 @@ Blender add-on to dramatically reduce render times using the [Real-ESRGAN](https
 
 **Why**
 
-* 🥔 Potato PCs can now do 3D rendering.
+* Any PC or laptop can now do 3D rendering.
 * 🖼️ 4k images can be rendered in the time it would take to render HD 1080p images.
 * 🖼️ HD 1080p images can be rendered in record time on low end hardware.
-
 * Installation is easy. Just install the addon.
-* No special HW or GPU required. Upscaling is done entirely on the CPU.
+* No special hardware or GPU required. Upscaling is done entirely on the CPU.
 
 **How**
 
