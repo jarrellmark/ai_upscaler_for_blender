@@ -13,7 +13,7 @@ Blender add-on to dramatically reduce render times using the [Real-ESRGAN](https
 
 **Why**
 
-* 🥔 Potato PCs can now do 3d rendering.
+* 🥔 Potato PCs can now do 3D rendering.
 * 🖼️ 4k images can be rendered in the time it would take to render HD 1080p images.
 * 🖼️ HD 1080p images can be rendered in record time on low end hardware.
 
