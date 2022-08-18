@@ -5,11 +5,11 @@ Dramatically reduce render times using the [Real-ESRGAN](https://github.com/xinn
 
 **Rendered in 5 mins with upscaling**
 
-![Teaser Upscaled](/assets/teaser_upscaled.png)
+![Teaser Upscaled](/assets/teaser_upscaled.jpg)
 
 **Rendered in 37 mins without upscaling**
 
-![Teaser Full Render](/assets/teaser_full_render.png)
+![Teaser Full Render](/assets/teaser_full_render.jpg)
 
 Install
 -------
