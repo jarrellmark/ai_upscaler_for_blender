@@ -1,6 +1,7 @@
 import copy
 from datetime import date, datetime
 from pathlib import Path
+import subprocess
 import sys
 import traceback
 
@@ -8,13 +9,14 @@ import bpy
 
 bl_info = {
     "name": "AI Upscaler for Blender",
+    "version": (2, 0, 0),
     "blender": (2, 93, 0)
 }
 
 ai_upscaler_properties = {
     'render_resolution_x': 480,
     'render_resolution_x': 270,
-    'scale_factor': 4.0
+    'scale_factor': 4
 }
 
 def show_message_box(message="", title="AI Upscaler", icon='ERROR'):
@@ -66,105 +68,132 @@ class AiUpscalerPanel(bpy.types.Panel):
         row.scale_y = 3.0
         row.operator("object.ai_upscaler_render_button")
 
+        # Big render animation button
+        row = layout.row()
+        row.scale_y = 3.0
+        row.operator("object.ai_upscaler_render_animation_button")
+
         # Output image paths
         layout.label(text="Small Image:")
         layout.prop(context.scene, "small_image_file_location")
         layout.label(text="Upscaled Image:")
         layout.prop(context.scene, "upscaled_image_file_location")
         
+
+def render_execute(context, animation=False):
+    # context.scene.ai_upscaler_scale_factor = 5
         
+    # Save file to prevent losing data
+    try:
+        bpy.ops.wm.save_mainfile()
+    except Exception as exception:
+        show_message_box("Do 'File -> Save' and try again.")
+        return {'FINISHED'}
+    
+    # Save variables to restore them later
+    original_x = context.scene.render.resolution_x
+    original_y = context.scene.render.resolution_y
+    original_scale = context.scene.render.resolution_percentage
+    original_render_path = context.scene.render.filepath
+    
+    try:
+        known_exception = False
+
+        # Set render resolution
+        context.scene.render.resolution_x = ai_upscaler_properties['render_resolution_x']
+        context.scene.render.resolution_y = ai_upscaler_properties['render_resolution_y']
+        context.scene.render.resolution_percentage = 100
+        
+        # Set paths
+        new_path = Path(context.scene.render.filepath)
+        if not new_path.exists():
+            show_message_box("Set 'Output Path' to an existing folder.")
+            known_exception = True
+            raise Exception("Set 'Output Path' to an existing folder.")
+        if not new_path.is_dir():
+            show_message_box("Set 'Output Path' to an existing folder.")
+            known_exception = True
+            raise Exception("Set 'Output Path' to an existing folder.")
+        new_path = new_path / f"blender_output_{datetime.now().isoformat().replace(':', '-')}Z"
+        small_images_path = new_path / "small_images"
+        small_images_path.mkdir(parents=True, exist_ok=True)
+        upscaled_images_path = new_path / "upscaled_images"
+        upscaled_images_path.mkdir(parents=True, exist_ok=True)
+
+        # Set upcaler paths
+        if sys.platform.startswith('win32'):
+            realesrgan_binary_path = Path(__file__).parent / 'realesrgan-ncnn-vulkan' / 'realesrgan-ncnn-vulkan-v0.2.0-windows' / 'realesrgan-ncnn-vulkan.exe'
+        elif sys.platform.startswith('darwin'):
+            realesrgan_binary_path = Path(__file__).parent / 'realesrgan-ncnn-vulkan' / 'realesrgan-ncnn-vulkan-v0.2.0-macos' / 'realesrgan-ncnn-vulkan'
+        elif sys.platform.startswith('linux'):
+            realesrgan_binary_path = Path(__file__).parent / 'realesrgan-ncnn-vulkan' / 'realesrgan-ncnn-vulkan-v0.2.0-ubuntu' / 'realesrgan-ncnn-vulkan'
+        else:
+            known_exception = True
+            raise Exception(f"Unsupported platform: {sys.platform}")
+        models_path = Path(__file__).parent / 'realesrgan-ncnn-vulkan' / 'models'
+        
+        # Render
+        if not animation:
+            context.scene.render.filepath = f"{small_images_path}/001.png"
+            bpy.ops.render.render(write_still=True, animation=animation)
+        else:
+            context.scene.render.filepath = f"{small_images_path}/"
+            bpy.ops.render.render(animation=animation)
+
+        # Upscale
+        for small_image_path in small_images_path.glob('*'):
+            subprocess.run(
+                [
+                    str(realesrgan_binary_path.resolve()),
+                    "-i", str(small_image_path.resolve()),
+                    "-o", str((upscaled_images_path / small_image_path.name).resolve()),
+                    "-s", str(ai_upscaler_properties['scale_factor']),
+                    # "-t", "32",
+                    "-m", str(models_path.resolve()),
+                    "-n", "realesrgan-x4plus"
+                ],
+                check=True
+            )
+
+        # Display paths
+        context.scene.small_image_file_location = str(small_images_path)
+        context.scene.upscaled_image_file_location = str(upscaled_images_path)
+    except Exception as exception:
+        print(f"Exception:")
+        print(traceback.format_exc())
+        if not known_exception:
+            show_message_box(traceback.format_exc())
+    finally:
+        # Restore original variables
+        context.scene.render.resolution_x = original_x
+        context.scene.render.resolution_y = original_y
+        context.scene.render.resolution_percentage = original_scale
+        context.scene.render.filepath = original_render_path
+    return {'FINISHED'}
+
+
 class AiUpscalerRenderOperator(bpy.types.Operator):
-    bl_idname = "object.ai_upscaler_render_button" # <- put this string in layout.operator()
-    bl_label = "Render & Upscale"
+    bl_idname = "object.ai_upscaler_render_button"
+    bl_label = "Render Image & Upscale"
 
     @classmethod
     def poll(cls, context):
         return context.active_object is not None
 
     def execute(self, context):
-        # context.scene.ai_upscaler_scale_factor = 5
-        
-        # Save file to prevent losing data
-        try:
-            bpy.ops.wm.save_mainfile()
-        except Exception as exception:
-            show_message_box("Do 'File -> Save' and try again.")
-            return {'FINISHED'}
-        
-        # Save variables to restore them later
-        original_x = context.scene.render.resolution_x
-        original_y = context.scene.render.resolution_y
-        original_scale = context.scene.render.resolution_percentage
-        original_render_path = context.scene.render.filepath
-        original_sys_path = copy.deepcopy(sys.path)
-        # Delete numpy from modules because sys.modules is loaded before sys.path
-        # and Blender has numpy in sys.modules.
-        original_numpy_modules = {}
-        for key, value in list(sys.modules.items()):
-            if key.startswith('numpy'):
-                original_numpy_modules[key] = value
-                del sys.modules[key]
-        
-        try:
-            known_exception = False
+        return render_execute(context, animation=False)
 
-            # Set render resolution
-            context.scene.render.resolution_x = ai_upscaler_properties['render_resolution_x']
-            context.scene.render.resolution_y = ai_upscaler_properties['render_resolution_y']
-            context.scene.render.resolution_percentage = 100
-            
-            # Calculate paths
-            new_path = Path(context.scene.render.filepath)
-            if not new_path.exists():
-                show_message_box("Set 'Output Path' to an existing folder.")
-                known_exception = True
-                raise Exception("Set 'Output Path' to an existing folder.")
-            if not new_path.is_dir():
-                show_message_box("Set 'Output Path' to an existing folder.")
-                known_exception = True
-                raise Exception("Set 'Output Path' to an existing folder.")
-            new_path = new_path / f"blender_output_{datetime.now().isoformat().replace(':', '-')}Z"
-            small_image_path = str(new_path / "small_image.png")
-            upscaled_image_path = str(new_path / "upscaled_image.png")
-            
-            # Set small image location
-            context.scene.render.filepath = small_image_path
-            
-            # Render
-            bpy.ops.render.render(write_still=True)
 
-            # Upscale
-            sys.path = [str(Path(__file__).parent / 'Real-ESRGAN' / 'site-packages')] + sys.path
-            sys.path = [str(Path(__file__).parent)] + sys.path
-            import inference_realesrgan_blender
-            upscaler = inference_realesrgan_blender.RealESRGANerBlender()
-            upscaler.upscale(
-                input_path=small_image_path,
-                save_path=upscaled_image_path,
-                scale_factor=ai_upscaler_properties['scale_factor']
-            )
+class AiUpscalerRenderAnimationOperator(bpy.types.Operator):
+    bl_idname = "object.ai_upscaler_render_animation_button"
+    bl_label = "Render Animation & Upscale"
 
-            # Display paths
-            context.scene.small_image_file_location = small_image_path
-            context.scene.upscaled_image_file_location = upscaled_image_path
-        except Exception as exception:
-            print(f"Exception:")
-            print(traceback.format_exc())
-            if not known_exception:
-                show_message_box(traceback.format_exc())
-        finally:
-            # Restore original variables
-            context.scene.render.resolution_x = original_x
-            context.scene.render.resolution_y = original_y
-            context.scene.render.resolution_percentage = original_scale
-            context.scene.render.filepath = original_render_path
-            sys.path = copy.deepcopy(original_sys_path)
-            for key, value in list(sys.modules.items()):
-                if key.startswith('numpy'):
-                    del sys.modules[key]
-            for key, value in original_numpy_modules.items():
-                sys.modules[key] = value
-        return {'FINISHED'}
+    @classmethod
+    def poll(cls, context):
+        return context.active_object is not None
+
+    def execute(self, context):
+        return render_execute(context, animation=True)
 
 
 def register():
@@ -196,6 +225,7 @@ def register():
     )
     
     bpy.utils.register_class(AiUpscalerRenderOperator)
+    bpy.utils.register_class(AiUpscalerRenderAnimationOperator)
 
 
 def unregister():
@@ -207,6 +237,7 @@ def unregister():
     del bpy.types.Scene.upscaled_image_file_location
     
     bpy.utils.unregister_class(AiUpscalerRenderOperator)
+    bpy.utils.unregister_class(AiUpscalerRenderAnimationOperator)
 
 
 if __name__ == "__main__":

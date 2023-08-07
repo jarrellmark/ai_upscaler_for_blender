@@ -27,6 +27,12 @@ With the click of a button:
 * The Real-ESRGAN Upscaler upscales the low resolution image to a higher resolution image.
 * Real-ESRGAN is a deep learning upscaler that uses neural networks to achieve excellent results by adding in detail when it upscales.
 
+**New in 2.0**
+
+* Animation support
+* Faster execution
+* Smaller download
+
 Install
 -------
 
@@ -34,10 +40,7 @@ Install
 
 **Blender 3.1 or newer**
 
-* [Windows](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-windows-blender31.zip)
-* [macOS - Intel](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-macos-x64-blender31.zip)
-* [macOS - Apple Silicon](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-macos-arm64-blender31.zip)
-* [Linux](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v1.0.0/ai_upscaler_for_blender-linux-blender31.zip)
+* Download(https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v2.0.0/ai_upscaler_for_blender-v2_0_0.zip)
 
 ⬇️ Open Blender.
 
