@@ -40,7 +40,7 @@ Install
 
 **Blender 3.1 or newer**
 
-* Download(https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v2.0.0/ai_upscaler_for_blender-v2_0_0.zip)
+* [Download](https://github.com/jarrellmark/ai_upscaler_for_blender/releases/download/v2.0.0/ai_upscaler_for_blender-v2_0_0.zip)
 
 ⬇️ Open Blender.
 
