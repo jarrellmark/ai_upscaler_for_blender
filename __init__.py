@@ -9,8 +9,15 @@ import bpy
 
 bl_info = {
     "name": "AI Upscaler for Blender",
-    "version": (2, 0, 0),
-    "blender": (2, 93, 0)
+    "author": "jarrellmark",
+    "version": (2, 0, 1),
+    "blender": (3, 6, 0),
+    "location": "Properties Editor > Output tab > AI Upscaler panel",
+    "description": "Implementation of Real-ESRGAN upscaler to reduce render times by rendering at lower resolution and then upscaling.",
+    "warning": "",
+    "doc_url": "https://github.com/jarrellmark/ai_upscaler_for_blender",
+    "tracker_url": "https://github.com/jarrellmark/ai_upscaler_for_blender/issues",
+    "category": "Render",
 }
 
 ai_upscaler_properties = {
